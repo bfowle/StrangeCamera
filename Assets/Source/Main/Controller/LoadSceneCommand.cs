@@ -1,4 +1,3 @@
-/// This Command adds a Scene to the current one
 using System;
 using UnityEngine;
 using strange.extensions.context.api;

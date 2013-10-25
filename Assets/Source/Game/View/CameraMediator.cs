@@ -15,13 +15,9 @@ namespace StrangeCamera.Game {
 		public CameraView view { get; set; }
 		
 		[Inject]
-		public GameOverSignal gameOverSignal { get; set; }
+		public CameraStateSignal cameraStateSignal { get; set; }
 		[Inject]
-		public ReplaySignal replaySignal { get; set; }
-		[Inject]
-		public RestartGameSignal restartGameSignal { get; set; }
-		[Inject]
-		public GameUpdateSignal gameUpdateSignal { get; set; }
+		public FlythroughCompleteSignal flythroughCompleteSignal { get; set; }
 		
 		public override void OnRegister() {
 			AddListeners();
@@ -35,33 +31,52 @@ namespace StrangeCamera.Game {
 		}
 		
 		private void AddListeners() {
-			gameOverSignal.AddListener(onGameOver);
-			replaySignal.AddListener(onReplay);
-			restartGameSignal.AddListener(onRestartGame);
-			gameUpdateSignal.AddListener(onGameUpdate);
+			cameraStateSignal.AddListener(onCameraStateChanged);
 		}
 		
 		private void RemoveListeners() {
-			gameOverSignal.RemoveListener(onGameOver);
-			replaySignal.RemoveListener(onReplay);
-			restartGameSignal.RemoveListener(onRestartGame);
-			gameUpdateSignal.RemoveListener(onGameUpdate);
+			cameraStateSignal.RemoveListener(onCameraStateChanged);
 		}
 		
-		private void onGameOver() {
-			RemoveListeners();
+		private void onCameraStateChanged(CameraState state) {
+			model.SetState(state);
 			
-			view.gameOver();
+			view.stateChange(state);
+			if (state == CameraState.CINEMATIC) {
+				StartCoroutine(flyToWaypoints());
+			} else if (state == CameraState.CHARACTER) {
+				view.attachToCharacter();
+			}
 		}
 		
-		private void onReplay() {
+		private IEnumerator flyToWaypoints() {
+			CameraWaypoint waypoint;
+			int i = 0,
+				len = model.waypoints.Count;
+			
+			for (; i < len; i++) {
+				waypoint = model.waypoints[i];
+				
+				view.flyToWaypoint(waypoint);
+				
+				if (i < len-1) {
+					yield return StartCoroutine(waypointDelay(waypoint.duration));
+				} else {
+					yield return new WaitForSeconds(waypoint.duration);
+				}
+			}
+			
+			flythroughCompleteSignal.Dispatch();
+			
+			yield return null;
 		}
 		
-		private void onRestartGame() {
-			OnRegister();
-		}
-		
-		private void onGameUpdate() {
+		private IEnumerator waypointDelay(float duration) {
+			float delayOffset = 0.25f,
+				speed = 1f;
+			
+			yield return new WaitForSeconds(duration - delayOffset);
+			yield return new WaitForSeconds(speed/* + delayOffset*/);
 		}
 		
 	}

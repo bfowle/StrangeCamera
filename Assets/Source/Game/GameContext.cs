@@ -34,11 +34,16 @@ namespace StrangeCamera.Game {
 		
 		protected override void mapBindings() {
 			injectionBinder.Bind<ICamera>().To<CameraModel>().ToSingleton();
+			
+			injectionBinder.Bind<CameraStateSignal>().ToSingleton();
+			injectionBinder.Bind<FlythroughCompleteSignal>().ToSingleton();
 
 			mediationBinder.Bind<CameraView>().To<CameraMediator>();
 			
 			commandBinder.Bind<StartSignal>().To<StartAppCommand>()
 				.To<StartGameCommand>().Once().InSequence();
+			commandBinder.Bind<CameraSequenceSignal>().To<CameraFlythroughCommand>()
+				.To<CameraAttachCommand>().InSequence();
 		}
 		
 	}

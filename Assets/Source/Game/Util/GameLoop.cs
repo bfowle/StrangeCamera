@@ -9,13 +9,15 @@ namespace StrangeCamera.Game {
 		private bool sendUpdates = false;
 		
 		[Inject]
-		public GameUpdateSignal gameUpdateSignal { get; set; }
+		public CameraSequenceSignal cameraSequenceSignal { get; set; }
 		
 		public GameLoop() {
 		}
 		
 		public void Start() {
 			sendUpdates = true;
+
+			cameraSequenceSignal.Dispatch();
 		}
 		
 		public void Stop() {
@@ -24,7 +26,7 @@ namespace StrangeCamera.Game {
 		
 		void Update() {
 			if (sendUpdates) {
-				gameUpdateSignal.Dispatch();
+				//gameUpdateSignal.Dispatch();
 			}
 		}
 		
