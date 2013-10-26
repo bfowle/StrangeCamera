@@ -59,26 +59,65 @@ namespace StrangeCamera.Game {
 				
 				view.flyToWaypoint(waypoint);
 				
-				if (i < len-1) {
-					yield return StartCoroutine(waypointDelay(waypoint.duration));
-				} else {
-					yield return new WaitForSeconds(waypoint.duration);
-				}
+				yield return new WaitForSeconds(waypoint.duration + waypoint.delay);
 			}
 			
 			flythroughCompleteSignal.Dispatch();
 			
+			initialSequence = false;
+			
 			yield return null;
 		}
 		
-		private IEnumerator waypointDelay(float duration) {
-			float delayOffset = 0.25f,
-				speed = 1f;
-			
-			yield return new WaitForSeconds(duration - delayOffset);
-			yield return new WaitForSeconds(speed/* + delayOffset*/);
-		}
+		//-----------------------------------
+		//- DEMO DEBUG CONTROLS/INFORMATION -
+		//-----------------------------------
 		
+		private bool initialSequence = true;
+		private int currentWaypoint = -1;
+		
+	    void OnGUI() {
+			if (initialSequence) {
+				return;
+			}
+			
+			GUI.Box(new Rect(10, 10, 260, 140), "Demo Controls");
+	
+			GUIStyle btnStyle = new GUIStyle(GUI.skin.button);
+			Texture2D btnInactive = btnStyle.normal.background;
+			Texture2D btnActive = btnStyle.active.background;
+			
+			GUI.Label(new Rect(20, 40, 80, 20), "Mode:");
+			
+			btnStyle.normal.background = (model.state == CameraState.CINEMATIC ? btnActive : btnInactive);
+			if (GUI.Button(new Rect(100, 40, 80, 20), "Cinematic", btnStyle)) {
+				model.SetState(CameraState.CINEMATIC);
+				view.stateChange(CameraState.CINEMATIC);
+			}
+			
+			btnStyle.normal.background = (model.state == CameraState.CHARACTER ? btnActive : btnInactive);
+			if (GUI.Button(new Rect(185, 40, 80, 20), "Character", btnStyle)) {
+				model.SetState(CameraState.CHARACTER);
+				view.stateChange(CameraState.CHARACTER);
+			}
+			
+			if (model.state == CameraState.CINEMATIC) {
+				GUI.Label(new Rect(20, 70, 80, 20), "Waypoints:");
+				
+				int i = 0,
+					y = 70;
+				foreach (CameraWaypoint waypoint in model.waypoints) {
+					btnStyle.normal.background = (currentWaypoint == i ? btnActive : btnInactive);
+					if (GUI.Button(new Rect(100, y, 80, 20), "Waypoint " + (i + 1), btnStyle)) {
+						view.flyToWaypoint(waypoint);
+						currentWaypoint = i;
+					}
+					i++;
+					y += 25;
+				}
+			}
+	    }
+	
 	}
 	
 }

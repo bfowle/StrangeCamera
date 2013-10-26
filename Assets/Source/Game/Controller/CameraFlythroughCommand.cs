@@ -25,12 +25,34 @@ namespace StrangeCamera.Game {
 		}
 
         private void startFlythrough() {
-			model.AddWaypoint(new CameraWaypoint(new Vector3(127.35866f, 45.87816f, 200.3675f),
-				new Vector3(45.8233f, 8.03159f, 89.49033f), 5f));
-			model.AddWaypoint(new CameraWaypoint(new Vector3(1.655273f, 8.896175f, 1.212587f),
-				new Vector3(0.5085396f, 2.39273f, -21.69198f), 4f));
-			model.AddWaypoint(new CameraWaypoint(new Vector3(0.9397072f, 4.838002f, -16.72858f),
-				new Vector3(10.917943f, 10.380289f, -42.28947f), 3f));
+			// waypoint:
+			// - from position, to position
+			// - from rotation, to rotation
+			// - duration, delay
+			
+			model.AddWaypoint(new CameraWaypoint(
+				new Vector3(-133.3f, 20.1f, -21.1f),
+				new Vector3(-107.8f, 32f, 31.2f),
+				new Vector3(34.4f, 278.5f, 0),
+				new Vector3(8.8f, 0.9f, 0),
+				5f, 0.5f
+			));
+			
+		    model.AddWaypoint(new CameraWaypoint(
+				new Vector3(-141.4f, 42.4f, 222f),
+				new Vector3(-63.1f, 50.1f, 188f),
+				new Vector3(38.2f, 138.8f, 0),
+				new Vector3(37.3f, 152.7f, 0),
+				4f, 0.5f
+			));
+			
+			model.AddWaypoint(new CameraWaypoint(
+				new Vector3(-86.5f, 27.3f, 31.6f),
+				new Vector3(6f, 20.6f, -24.4f),
+				new Vector3(24.1f, 104.6f, 0),
+				new Vector3(57.8f, 7.5f, 0),
+				5f, 0.1f
+			));
 			
 			cameraStateSignal.Dispatch(CameraState.CINEMATIC);
         }
