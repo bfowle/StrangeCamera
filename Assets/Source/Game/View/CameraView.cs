@@ -10,7 +10,7 @@ namespace StrangeCamera.Game {
 		
 		private const float DISTANCE = 15f;
 		private const float HEIGHT = 8f;
-		private const float DELAY = 2.5f;
+		private const float SPEED = 2.5f;
 
 		public GameObject target;
 		
@@ -55,7 +55,7 @@ namespace StrangeCamera.Game {
 		}
 		
 		private void updateCharacterCamera() {
-			float t = DELAY * Time.deltaTime;
+			float t = SPEED * Time.deltaTime;
 			
 	        _transform.position = Vector3.Lerp(_transform.position, target.transform.position + 
 				new Vector3(DISTANCE, HEIGHT, -DISTANCE), t);

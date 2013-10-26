@@ -15,10 +15,9 @@ namespace StrangeCamera.Game {
 		public IContext context { get; set; }
 		
 		public override void Execute() {
-			// attach the GameLoop MonoBehaviour to the contextView
 			contextView.AddComponent<GameLoop>();
+			
 			IGameTimer timer = contextView.GetComponent<GameLoop>();
-			// then bind it for injection
 			injectionBinder.Bind<IGameTimer>().ToValue(timer);
 		}
 		
