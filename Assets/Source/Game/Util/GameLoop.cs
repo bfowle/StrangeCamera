@@ -6,8 +6,6 @@ namespace StrangeCamera.Game {
 	
 	public class GameLoop : MonoBehaviour, IGameTimer {
 		
-		private bool sendUpdates = false;
-		
 		[Inject]
 		public CameraSequenceSignal cameraSequenceSignal { get; set; }
 		
@@ -15,19 +13,10 @@ namespace StrangeCamera.Game {
 		}
 		
 		public void Start() {
-			sendUpdates = true;
-
 			cameraSequenceSignal.Dispatch();
 		}
 		
 		public void Stop() {
-			sendUpdates = false;
-		}
-		
-		void Update() {
-			if (sendUpdates) {
-				//gameUpdateSignal.Dispatch();
-			}
 		}
 		
 	}

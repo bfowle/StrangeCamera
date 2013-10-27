@@ -14,6 +14,11 @@ namespace StrangeCamera.Game {
 
 		public GameObject target;
 		
+		// demo controls
+		private float cameraDistance = DISTANCE;
+		private float cameraHeight = HEIGHT;
+		private float cameraSpeed = SPEED;
+		private bool cameraLookAt = false;
 		
 		private Transform _transform;
 		private CameraState _state;
@@ -42,9 +47,14 @@ namespace StrangeCamera.Game {
 			_waypoint = waypoint;
 		}
 		
+		internal void beginFlythrough() {
+			// demo - disable controls
+			target.GetComponent<ThirdPersonController>().isControllable = false;
+		}
+		
 		internal void attachToCharacter() {
-			// enable controls
-			target.GetComponent<ThirdPersonController>().enabled = true;
+			// demo - enable controls
+			target.GetComponent<ThirdPersonController>().isControllable = true;
 		}
 		
 		private void updateCinematicCamera() {
@@ -55,12 +65,38 @@ namespace StrangeCamera.Game {
 		}
 		
 		private void updateCharacterCamera() {
-			float t = SPEED * Time.deltaTime;
+			float t = cameraSpeed * Time.deltaTime;
 			
 	        _transform.position = Vector3.Lerp(_transform.position, target.transform.position + 
-				new Vector3(DISTANCE, HEIGHT, -DISTANCE), t);
-			_transform.rotation = Quaternion.Slerp(_transform.rotation, 
-				Quaternion.Euler(new Vector3(30f, -45f, 0)), t);
+				new Vector3(cameraDistance, cameraHeight, -cameraDistance), t);
+			
+			if (cameraLookAt) {
+				_transform.rotation = Quaternion.Slerp (_transform.rotation, 
+					Quaternion.LookRotation(target.transform.position - _transform.position), t);
+			} else {
+				_transform.rotation = Quaternion.Slerp(_transform.rotation, 
+					Quaternion.Euler(new Vector3(30f, -45f, 0)), t);
+			}
+		}
+		
+		//-----------------------------------
+		//- DEMO CONTROLS                   -
+		//-----------------------------------
+		
+		internal void setCameraDistance(float distance) {
+			cameraDistance = distance;
+		}
+		
+		internal void setCameraHeight(float height) {
+			cameraHeight = height;
+		}
+		
+		internal void setCameraSpeed(float speed) {
+			cameraSpeed = speed;
+		}
+		
+		internal void setLookAtTarget(bool lookAt) {
+			cameraLookAt = lookAt;
 		}
 		
 	}

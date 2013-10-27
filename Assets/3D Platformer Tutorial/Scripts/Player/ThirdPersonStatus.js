@@ -92,8 +92,8 @@ function Die ()
 	lives--;
 	health = maxHealth;
 	
-	if(lives < 0)
-		Application.LoadLevel("GameOver");	
+	//if(lives < 0)
+	//	Application.LoadLevel("GameOver");	
 	
 	// If we've reached here, the player still has lives remaining, so respawn.
 	respawnPosition = Respawn.currentRespawn.transform.position;

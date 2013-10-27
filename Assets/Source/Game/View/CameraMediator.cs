@@ -45,13 +45,13 @@ namespace StrangeCamera.Game {
 			if (state == CameraState.CINEMATIC) {
 				StartCoroutine(flyToWaypoints());
 				// demo
+				view.beginFlythrough();
 				cinematicStart = true;
 				
 			} else if (state == CameraState.CHARACTER) {
 				view.attachToCharacter();
 				// demo
 				characterAttach = true;
-				
 			}
 		}
 		
@@ -62,12 +62,13 @@ namespace StrangeCamera.Game {
 			
 			for (; i < len; i++) {
 				waypoint = model.waypoints[i];
-				// demo purposes
-				currentWaypoint = i;
 				
 				view.flyToWaypoint(waypoint);
 				
 				yield return new WaitForSeconds(waypoint.duration + waypoint.delay);
+				
+				// demo purposes
+				currentWaypoint++;
 			}
 			
 			flythroughCompleteSignal.Dispatch();
@@ -89,13 +90,16 @@ namespace StrangeCamera.Game {
 		private bool cinematicStart = false;
 		private bool cinematicEnd = false;
 		private bool characterAttach = false;
-		private int currentWaypoint = -1;
+		private int currentWaypoint = 0;
+		private float sliderDistance = 15f;
+		private float sliderHeight = 8f;
+		private float sliderSpeed = 2.5f;
+		private bool lookAtTarget = false;
 		
 	    void OnGUI() {
 			if (initialSequence) {
 				GUI.Box(new Rect(10, 10, 260, (60 + (currentWaypoint * 20) +
-					(cinematicStart ? 20 : 0) + (cinematicEnd ? 20 : 0) +
-					(characterAttach ? 20 : 0))), "Demo Console");
+					(cinematicStart ? 20 : 0) + (characterAttach ? 20 : 0))), "Demo Console");
 				
 				if (cinematicStart) {
 					GUI.Label(new Rect(20, 40, 200, 40), "State: CINEMATIC started...");
@@ -120,7 +124,7 @@ namespace StrangeCamera.Game {
 					GUI.Label(new Rect(20, y, 200, 40), "State: CHARACTER attached...");
 				}
 			} else {
-				GUI.Box(new Rect(10, 10, 260, 140), "Demo Controls");
+				GUI.Box(new Rect(10, 10, 260, 150), "Demo Controls");
 		
 				GUIStyle btnStyle = new GUIStyle(GUI.skin.button);
 				Texture2D btnInactive = btnStyle.normal.background;
@@ -153,6 +157,41 @@ namespace StrangeCamera.Game {
 						}
 						i++;
 						y += 25;
+					}
+				} else if (model.state == CameraState.CHARACTER) {
+					GUIStyle sliderStyle = new GUIStyle(GUI.skin.horizontalSlider);
+					sliderStyle.normal.background = btnStyle.active.background;
+					GUIStyle thumbStyle = new GUIStyle(GUI.skin.horizontalSliderThumb);
+					
+					float oldDistance = sliderDistance,
+						oldHeight = sliderHeight,
+						oldSpeed = sliderSpeed;
+					bool oldLookAt = lookAtTarget;
+					
+					GUI.Label(new Rect(20, 70, 115, 20), "Camera Distance:");
+					sliderDistance = GUI.HorizontalSlider(new Rect(135, 75, 120, 10),
+						sliderDistance, 2f, 30f, sliderStyle, thumbStyle);
+					if (sliderDistance != oldDistance) {
+						view.setCameraDistance(sliderDistance);
+					}
+					
+					GUI.Label(new Rect(20, 90, 115, 20), "Camera Height:");
+					sliderHeight = GUI.HorizontalSlider(new Rect(135, 95, 120, 10),
+						sliderHeight, 2f, 20f, sliderStyle, thumbStyle);
+					if (sliderHeight != oldHeight) {
+						view.setCameraHeight(sliderHeight);
+					}
+					
+					GUI.Label(new Rect(20, 110, 115, 20), "Camera Speed:");
+					sliderSpeed = GUI.HorizontalSlider(new Rect(135, 115, 120, 10),
+						sliderSpeed, 0.1f, 5f, sliderStyle, thumbStyle);
+					if (sliderSpeed != oldSpeed) {
+						view.setCameraSpeed(sliderSpeed);
+					}
+					
+					lookAtTarget = GUI.Toggle(new Rect(135, 135, 120, 20), lookAtTarget, " LookAt Target");
+					if (lookAtTarget != oldLookAt) {
+						view.setLookAtTarget(lookAtTarget);
 					}
 				}
 			}

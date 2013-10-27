@@ -73,7 +73,7 @@ private var lastGroundedTime = 0.0;
 private var lean = 0.0;
 private var slammed = false;
 
-private var isControllable = true;
+var isControllable = true;
 
 function Awake ()
 {
@@ -86,7 +86,7 @@ function Awake ()
 
 function HidePlayer()
 {
-	GameObject.Find("rootJoint").GetComponent(SkinnedMeshRenderer).enabled = false; // stop rendering the player.
+	GameObject.Find("Lerpz").GetComponent(SkinnedMeshRenderer).enabled = false; // stop rendering the player.
 	isControllable = false;	// disable player controls.
 }
 
@@ -95,7 +95,7 @@ function HidePlayer()
 
 function ShowPlayer()
 {
-	GameObject.Find("rootJoint").GetComponent(SkinnedMeshRenderer).enabled = true; // start rendering the player again.
+	GameObject.Find("Lerpz").GetComponent(SkinnedMeshRenderer).enabled = true; // start rendering the player again.
 	isControllable = true;	// allow player to control the character again.
 }
 
@@ -257,34 +257,31 @@ function ApplyJumping ()
 
 function ApplyGravity ()
 {
-	if (isControllable)	// don't move player at all if not controllable.
-	{
-		// Apply gravity
-		var jumpButton = Input.GetButton("Jump");
-		
-		// * When falling down we use controlledDescentGravity (only when holding down jump)
-		var controlledDescent = canControlDescent && verticalSpeed <= 0.0 && jumpButton && jumping;
-		
-		// When we reach the apex of the jump we send out a message
-		if (jumping && !jumpingReachedApex && verticalSpeed <= 0.0)
-		{
-			jumpingReachedApex = true;
-			SendMessage("DidJumpReachApex", SendMessageOptions.DontRequireReceiver);
-		}
+	// Apply gravity
+	var jumpButton = Input.GetButton("Jump");
 	
-		// * When jumping up we don't apply gravity for some time when the user is holding the jump button
-		//   This gives more control over jump height by pressing the button longer
-		var extraPowerJump =  IsJumping () && verticalSpeed > 0.0 && jumpButton && transform.position.y < lastJumpStartHeight + extraJumpHeight;
-		
-		if (controlledDescent)			
-			verticalSpeed -= controlledDescentGravity * Time.deltaTime;
-		else if (extraPowerJump)
-			return;
-		else if (IsGrounded ())
-			verticalSpeed = 0.0;
-		else
-			verticalSpeed -= gravity * Time.deltaTime;
+	// * When falling down we use controlledDescentGravity (only when holding down jump)
+	var controlledDescent = canControlDescent && verticalSpeed <= 0.0 && jumpButton && jumping;
+	
+	// When we reach the apex of the jump we send out a message
+	if (jumping && !jumpingReachedApex && verticalSpeed <= 0.0)
+	{
+		jumpingReachedApex = true;
+		SendMessage("DidJumpReachApex", SendMessageOptions.DontRequireReceiver);
 	}
+
+	// * When jumping up we don't apply gravity for some time when the user is holding the jump button
+	//   This gives more control over jump height by pressing the button longer
+	var extraPowerJump =  IsJumping () && verticalSpeed > 0.0 && jumpButton && transform.position.y < lastJumpStartHeight + extraJumpHeight;
+	
+	if (controlledDescent)			
+		verticalSpeed -= controlledDescentGravity * Time.deltaTime;
+	else if (extraPowerJump)
+		return;
+	else if (IsGrounded ())
+		verticalSpeed = 0.0;
+	else
+		verticalSpeed -= gravity * Time.deltaTime;
 }
 
 function CalculateJumpVerticalSpeed (targetJumpHeight : float)
