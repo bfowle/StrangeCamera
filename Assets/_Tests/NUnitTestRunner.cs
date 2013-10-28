@@ -6,7 +6,7 @@ using UnityEditor;
 
 public class NunitTestRunner {
 
-    [MenuItem("AGP/Unit Tests/Run Unit Tests %#r")]
+    [MenuItem("Unit Tests/Run Unit Tests %#r")]
     public static void RunAllTests() {
         NUnitLiteUnityRunner.RunTests();
     }
