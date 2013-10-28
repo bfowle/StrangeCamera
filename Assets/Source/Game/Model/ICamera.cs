@@ -3,16 +3,16 @@ using System.Collections.Generic;
 
 namespace StrangeCamera.Game {
 
-	public interface ICamera {
+    public interface ICamera {
 
-		CameraState state { get; }
-		List<CameraWaypoint> waypoints { get; }
+        CameraState state { get; }
+        List<CameraWaypoint> waypoints { get; }
 
         void SetState(CameraState value);
-		void AddWaypoint(CameraWaypoint value);
-		void ClearWaypoints();
+        void AddWaypoint(CameraWaypoint value);
+        void ClearWaypoints();
 
-	}
+    }
 
 }
 

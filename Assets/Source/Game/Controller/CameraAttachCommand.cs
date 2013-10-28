@@ -3,19 +3,16 @@ using UnityEngine;
 using strange.extensions.command.impl;
 
 namespace StrangeCamera.Game {
-	
-	public class CameraAttachCommand : Command {
 
-		[Inject]
-		public CameraStateSignal cameraStateSignal { get; set; }
-		//[Inject]
-		//public CharacterControlSignal characterControlSignal { get; set; }
+    public class CameraAttachCommand : Command {
 
-		public override void Execute() {
-			cameraStateSignal.Dispatch(CameraState.CHARACTER);
-			//characterControlSignal.Dispatch(true);
-		}
-		
-	}
-	
+        [Inject]
+        public CameraStateSignal cameraStateSignal { get; set; }
+
+        public override void Execute() {
+            cameraStateSignal.Dispatch(CameraState.CHARACTER);
+        }
+
+    }
+
 }
