@@ -44,6 +44,7 @@ namespace StrangeCamera.Game {
 				.To<StartGameCommand>().Once().InSequence();
 			commandBinder.Bind<CameraSequenceSignal>().To<CameraFlythroughCommand>()
 				.To<CameraAttachCommand>().InSequence();
+			commandBinder.Bind<ReplaySignal>().To<ReplayCommand>();
 		}
 		
 	}

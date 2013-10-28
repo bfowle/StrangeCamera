@@ -4,6 +4,6 @@ using strange.extensions.signal.impl;
 namespace StrangeCamera.Game {
 
     public class StartSignal : Signal {}
-	public class GameUpdateSignal : Signal {}
+	public class ReplaySignal : Signal {}
 
 }

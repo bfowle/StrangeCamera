@@ -15,15 +15,18 @@ namespace StrangeCamera.Game {
 		public CameraView view { get; set; }
 		
 		[Inject]
+        public ReplaySignal replaySignal { get; set; }
+		[Inject]
 		public CameraStateSignal cameraStateSignal { get; set; }
 		[Inject]
 		public FlythroughCompleteSignal flythroughCompleteSignal { get; set; }
 		
 		public override void OnRegister() {
 			AddListeners();
-			
-			// initialize the View
 			view.init();
+			
+			// demo
+			resetDemoValues();
 		}
 		
 		public override void OnRemove() {
@@ -31,12 +34,23 @@ namespace StrangeCamera.Game {
 		}
 		
 		private void AddListeners() {
+			replaySignal.AddListener(onReplay);
 			cameraStateSignal.AddListener(onCameraStateChanged);
 		}
 		
 		private void RemoveListeners() {
+			replaySignal.RemoveListener(onReplay);
 			cameraStateSignal.RemoveListener(onCameraStateChanged);
 		}
+		
+		private void onReplay() {
+			OnRemove();
+            OnRegister();
+			
+			// demo 
+			model.ClearWaypoints();
+			resetDemoValues();
+        }
 		
 		private void onCameraStateChanged(CameraState state) {
 			model.SetState(state);
@@ -62,12 +76,11 @@ namespace StrangeCamera.Game {
 			
 			for (; i < len; i++) {
 				waypoint = model.waypoints[i];
-				
 				view.flyToWaypoint(waypoint);
 				
 				yield return new WaitForSeconds(waypoint.duration + waypoint.delay);
 				
-				// demo purposes
+				// demo
 				currentWaypoint++;
 			}
 			
@@ -86,15 +99,32 @@ namespace StrangeCamera.Game {
 		//- DEMO DEBUG CONTROLS/INFORMATION -
 		//-----------------------------------
 		
-		private bool initialSequence = true;
-		private bool cinematicStart = false;
-		private bool cinematicEnd = false;
-		private bool characterAttach = false;
-		private int currentWaypoint = 0;
-		private float sliderDistance = 15f;
-		private float sliderHeight = 8f;
-		private float sliderSpeed = 2.5f;
-		private bool lookAtTarget = false;
+		private bool initialSequence;
+		private bool cinematicStart;
+		private bool cinematicEnd;
+		private bool characterAttach;
+		private int currentWaypoint;
+		private float sliderDistance;
+		private float sliderHeight;
+		private float sliderSpeed;
+		private bool lookAtTarget;
+		
+		private void resetDemoValues() {
+			initialSequence = true;
+			cinematicStart = false;
+			cinematicEnd = false;
+			characterAttach = false;
+			currentWaypoint = 0;
+			sliderDistance = 15f;
+			sliderHeight = 8f;
+			sliderSpeed = 2.5f;
+			lookAtTarget = false;
+			
+			view.setCameraDistance(sliderDistance);
+			view.setCameraHeight(sliderHeight);
+			view.setCameraSpeed(sliderSpeed);
+			view.setLookAtTarget(lookAtTarget);
+		}
 		
 	    void OnGUI() {
 			if (initialSequence) {
@@ -194,6 +224,12 @@ namespace StrangeCamera.Game {
 						view.setLookAtTarget(lookAtTarget);
 					}
 				}
+			}
+			
+			GUI.Box(new Rect(10, Screen.height - 50, 100, 40), "");
+			
+			if (GUI.Button(new Rect(20, Screen.height - 40, 80, 20), "Replay")) {
+				replaySignal.Dispatch();
 			}
 	    }
 	
